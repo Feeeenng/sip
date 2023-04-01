@@ -1,0 +1,51 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: sip
+  namespace: sip
+  labels:
+    app: sip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sip
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: sip
+      annotations:
+        k8s.v1.cni.cncf.io/networks: 'default/outside-conf, default/inside-conf'
+    spec:
+      volumes:
+        - name: volume-1z9b8l
+          configMap:
+            name: sip-conf
+            items:
+              - key: sip_conf
+                path: sip_proxy.conf
+            defaultMode: 420
+      containers:
+        - name: container-yufcsf
+          image: 'registry.cn-shenzhen.aliyuncs.com/os_mirror/sip_proxy:1.1'
+          command:
+            - /sbin/sip_proxy
+          args:
+            - '-c'
+            - /etc/sip_proxy.conf
+          ports:
+            - name: http-web
+              containerPort: 5060
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: volume-1z9b8l
+              mountPath: /etc/sip_proxy.conf
+              subPath: sip_proxy.conf
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%

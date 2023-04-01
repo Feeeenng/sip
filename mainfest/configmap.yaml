@@ -1,0 +1,23 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: sip-conf
+  namespace: sip
+data:
+  sip_conf: |-
+    daemonize=0
+    thread_num=16
+    sip_listen_port=5060
+    if_inbound=eno2
+    if_outbound=eno1
+    registration_file = /tmp/siproxd_registrations
+    autosave_registrations = 120
+    rtp_port_low =  20000
+    rtp_port_high = 30000
+    plugindir=/usr/lib/sip_proxy/
+    load_plugin=libplugin_fix_bogus_via.so
+    load_plugin=libplugin_filter.so
+    plugin_fix_bogus_via_networks = 127.0.0.1/32
+    outbound_domain_name=aaa.com
+    outbound_domain_host=1.1.1
+    outbound_domain_port=90
